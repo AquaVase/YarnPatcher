@@ -1,0 +1,56 @@
+plugins {
+    id 'java-gradle-plugin'
+    id 'maven-publish'
+}
+
+group = 'com.github.yarnpatcher'
+version = '0.1.0'
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.minecraftforge.net' }
+    maven { url = 'https://maven.fabricmc.net' }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    withSourcesJar()
+}
+
+dependencies {
+    if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+        compileOnly files(new File(System.getProperty('java.home'), '../lib/tools.jar'))
+    }
+
+    // Deliberately a published runtime dependency, never compileOnly or optional.
+    implementation 'net.minecraftforge.gradle:ForgeGradle:6.0.54'
+    implementation 'net.minecraftforge:srgutils:0.6.2'
+    implementation 'net.fabricmc:tiny-remapper:0.11.2'
+    implementation 'net.fabricmc:mapping-io:0.7.1'
+    implementation 'org.openrewrite:rewrite-java:8.63.4'
+
+    runtimeOnly 'org.openrewrite:rewrite-java-8:8.63.4'
+    runtimeOnly 'org.openrewrite:rewrite-java-17:8.63.4'
+    runtimeOnly 'org.openrewrite:rewrite-java-21:8.63.4'
+
+    testImplementation gradleTestKit()
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+gradlePlugin {
+    plugins {
+        yarnPatcher {
+            id = 'yarn-patcher'
+            implementationClass = 'com.github.yarnpatcher.YarnPatcherPlugin'
+            displayName = 'YarnPatcher'
+            description = "A ForgeGradle Patcher extension for Yarn mappings support"
+        }
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+    maxHeapSize = '2g'
+}

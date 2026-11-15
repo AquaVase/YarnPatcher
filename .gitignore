@@ -1,0 +1,9 @@
+.gradle/
+build/
+**/build/
+**/.gradle/
+.idea/
+*.iml
+*.hprof
+.yarnpatcher/
+examples/
